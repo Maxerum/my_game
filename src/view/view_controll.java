@@ -13,7 +13,7 @@ public class view_controll {
 	
 	public view_controll() {
 		mainPane=new AnchorPane();
-		mainScene=new Scene(mainPane,800,600);
+		mainScene=new Scene(mainPane,800,700);
 		mainStage =new Stage();
 		mainStage.setScene(mainScene);
 	}
