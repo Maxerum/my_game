@@ -26,8 +26,14 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.control.Button;
 
 public class Main extends Application {
+	
+	static int block_size=10;
+	int width = 20, height = 10;
+	
+	
     @Override
     public void start(Stage primaryStage) {
         Pane root = new Pane();
@@ -40,8 +46,8 @@ public class Main extends Application {
         
         
         Label label = new Label("SNAKE");
-        label.setFont(new Font("Arial", 100));
-        label.setTranslateX(450);
+        label.setFont(new Font("ItalicC", 100));
+        label.setTranslateX(310);
         label.setTextFill(Color.web("#0076a3"));
         root.getChildren().add(label);
         
@@ -60,23 +66,40 @@ public class Main extends Application {
         SubMenu optionsMenu = new SubMenu(
                 sound,video,keys,optionsBack
         );
-        MenuItem NG1 = new MenuItem("ÒÓÐÍÈÐ");
-        MenuItem NG2 = new MenuItem("ÎÄÈÍ ÇÀÅÇÄ");
-        MenuItem NG3 = new MenuItem("2 ÈÃÐÎÊÀ");
-        MenuItem NG4 = new MenuItem("ÍÀÇÀÄ");
-        SubMenu newGameMenu = new SubMenu(
-                NG1,NG2,NG3,NG4
-        );
+    
         MenuBox menuBox = new MenuBox(mainMenu);
-
-        newGame.setOnMouseClicked(event->menuBox.setSubMenu(newGameMenu));
+        Scene scene = new Scene(root,900,600);
+        
+        
+        StackPane layout2 = new StackPane();
+        Scene sceneGame= new Scene(layout2,900,600);
+        newGame.setOnMouseClicked(event->primaryStage.setScene(sceneGame));
+        
+        
+        gamaField f= new gamaField(width,height) ;
+        layout2.getChildren().add(f);
+        Image backImage = new Image(getClass().getResourceAsStream("green_baby.png"));
+        ImageView backImg = new ImageView(backImage);
+        img.setFitHeight(600);
+        img.setFitWidth(900);
+        layout2.getChildren().add(backImg);
+       // Button button = new Button();
+        //button.setText("Back");
+       // layout2.getChildren().add(button);
+        //snake_block block= new snake_block(); 
+       //
+        //layout2.getChildren().add(event->primaryStage)
+        
+        //button.setOnMouseClicked(event->primaryStage.setScene(scene));
+        
         options.setOnMouseClicked(event->menuBox.setSubMenu(optionsMenu));
         exitGame.setOnMouseClicked(event-> System.exit(0));
         optionsBack.setOnMouseClicked(event->menuBox.setSubMenu(mainMenu));
-        NG4.setOnMouseClicked(event-> menuBox.setSubMenu(mainMenu));
+        
+        //NG4.setOnMouseClicked(event-> menuBox.setSubMenu(mainMenu));
         root.getChildren().addAll(menuBox);
 
-        Scene scene = new Scene(root,900,600);
+        
         /*scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                
@@ -106,29 +129,31 @@ public class Main extends Application {
    }
     private static class MenuItem extends StackPane{
         public  MenuItem(String name){
-            Rectangle bg = new Rectangle(200,20,Color.BLUE);
+            Rectangle bg = new Rectangle(200,40,Color.BLUE);
            // bg.setOpacity(0.5);
 
             Text text = new Text(name);
             text.setFill(Color.WHITE);
             text.setFont(Font.font("Arial",FontWeight.BOLD,14));
 
-            setAlignment(Pos.CENTER);
+            //setAlignment(Pos.CENTER);
             getChildren().addAll(bg,text);
-            FillTransition st = new FillTransition(Duration.seconds(0.5),bg);
-            setOnMouseEntered(event -> {
+            //FillTransition st = new FillTransition(Duration.seconds(0.5),bg);
+            /*setOnMouseEntered(event -> {
                 st.setFromValue(Color.DARKGRAY);
                 st.setToValue(Color.DARKGOLDENROD);
-                st.setCycleCount(Animation.INDEFINITE);
+                //st.setCycleCount(Animation.INDEFINITE);
                 st.setAutoReverse(true);
                 st.play();
-            });
-            setOnMouseExited(event -> {
+            });*/
+            /*setOnMouseExited(event -> {
                 st.stop();
                 bg.setFill(Color.BLUE);
-            });
+            });*/
         }
     }
+    
+    
     private static class MenuBox extends Pane{
         static SubMenu subMenu;
         public MenuBox(SubMenu subMenu){
@@ -149,8 +174,8 @@ public class Main extends Application {
    private static class SubMenu extends VBox{
         public SubMenu(MenuItem...items){
             setSpacing(15);
-            setTranslateY(100);
-            setTranslateX(50);
+            setTranslateY(150);
+            setTranslateX(100);
             for(MenuItem item : items){
                 getChildren().addAll(item);
             }
