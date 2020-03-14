@@ -1,7 +1,6 @@
 package application;
 	
 import java.util.LinkedList;
-import javafx.animation.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -18,25 +17,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.scene.control.Button;
 
 public class Main extends Application {
-	final int[] boardX = new int[484];
-    final int[] boardY = new int[484];
+	final int[] X = new int[584];
+    final int[] Y = new int[602];
 	
-	
-	static int block_size = 10;
-	int width = 30, height = 10;
-	
-	int scoreReverseCounter = 99;
-	int bestScore = 99;
-	
-	int il = 5;
 	
 	int lengthOfSnake = 3;
 	
-	LinkedList<snake_block> snake = new LinkedList();
+	LinkedList<SnakeBlock> snake = new LinkedList();
 	
     @Override
     public void start(Stage primaryStage) {
@@ -59,6 +49,7 @@ public class Main extends Application {
         label.setTextFill(Color.web("#0076a3"));
         root.getChildren().add(label);
         
+        //Creating menu
         MenuItem newGame = new MenuItem("NEW GAME");
         MenuItem options = new MenuItem("SETTINGS");
         MenuItem exitGame = new MenuItem("EXIT");
@@ -86,6 +77,7 @@ public class Main extends Application {
         layout2.setStyle("-fx-background-color: rgb(0, 250, 154);");
         layout2.getChildren().add(canvas);
         
+        //Creating game field and places for output score, best score, fruits  and speed
         gc.setFill(Color.rgb(0, 250, 154));
         //draw rectangle
         gc.fillRect(0, 0, 900, 500);
@@ -104,9 +96,7 @@ public class Main extends Application {
         gc.setFont(Font.font("Arial", FontWeight.BOLD, 40));
         gc.fillText(" SNAKE ", 660, 35);
         
-        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 13));
-		/* gc.fillText("+ " + scoreReverseCounter, 510, 222); */
-        
+        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 13));  
         gc.setFill(Color.rgb(11, 54, 82));
         
         gc.setFont(Font.font("Arial", FontWeight.NORMAL, 15));
@@ -119,23 +109,14 @@ public class Main extends Application {
         gc.setFill(Color.rgb(11, 54, 82));
 		gc.fillRect(671, 121, 138, 28); 
         gc.setFill(Color.rgb(11, 54, 82));
-		/*
-		 * gc.fillText(bestScore + "", 550 + (142 - new Text(bestScore +
-		 * "").getLayoutBounds().getWidth()) / 2, 142);
-		 */
-        
-        
-        
+		
         gc.fillText("Total Score", 696, 190);
         gc.fillRect(670, 200, 140, 30);
         gc.setFill(Color.rgb(11, 54, 82));
         gc.fillRect(671, 201, 138, 28);
         gc.setFill(Color.rgb(11, 54, 82));
-		/*
-		 * gc.fillText(totalScore + "", 550 + (142 - new Text(totalScore +
-		 * "").getLayoutBounds().getWidth()) / 2, 222);
-		 */
-        gc.fillText("Fruit Eaten",696, 270);
+		
+        gc.fillText("    Fruits ",696, 270);
         gc.fillRect(670, 280, 140, 30);
         gc.setFill(Color.rgb(11, 54, 82));
         gc.fillRect(671, 281, 138, 28);
@@ -153,6 +134,7 @@ public class Main extends Application {
         exitGame.setOnMouseClicked(event-> System.exit(0));
         optionsBack.setOnMouseClicked(event->menuBox.setSubMenu(mainMenu));
 		
+        //Creating back button
         button.setText("BACK");
         button.setStyle("-fx-background-color:rgb(11, 54, 82);-fx-text-fill:rgb(0, 250, 154)");
         button.setTranslateX(290);
@@ -164,30 +146,34 @@ public class Main extends Application {
         layout2.getChildren().add(button);
         button.setOnMouseClicked(event->primaryStage.setScene(scene));
         
-        snake.clear();
-        
-        for (int i = 0; i < lengthOfSnake; i++) {
-        	 gc.drawImage(snakeBodyImage, boardX[i], boardY[i]);
-            snake.add(new snake_block(boardX[i], boardY[i]));
-        }
+       
+		X[2] = 40;
+		X[1] = 60;
+		X[0] = 80;
 
+		Y[2] = 100;
+		Y[1] = 100;
+		Y[0] = 100;
 
-        //NG4.setOnMouseClicked(event-> menuBox.setSubMenu(mainMenu));
+      
+        //Creating snake
+		
+		snake.clear();
+
+		for (int i = 0; i < lengthOfSnake; i++) {
+			gc.drawImage(snakeBodyImage, X[i], Y[i]);
+			snake.add(new SnakeBlock(X[i], Y[i]));
+		}
+		 
+
         root.getChildren().addAll(menuBox);
-        FadeTransition ft = new FadeTransition(Duration.seconds(1),menuBox);
-        ft.setFromValue(0);
-                    ft.setToValue(1);
-                    ft.play();
-                    menuBox.setVisible(true);
+        menuBox.setVisible(true);
         primaryStage.setResizable(false);
         primaryStage.setTitle("Snake");
         primaryStage.setScene(scene);
-        
-		/* primaryStage.initStyle(); */ 
         primaryStage.show();
-        
-       
    }
+    
     private static class MenuItem extends StackPane{
         public  MenuItem(String name){
             Rectangle bg = new Rectangle(200,40,Color.BLUE);
