@@ -77,7 +77,7 @@ public class Menu {
 		
 		newGame.setOnMouseClicked(click-> {
 			GameScene gameScene = new GameScene();
-			gameScene.loadNewGame(mainStage);
+			gameScene.start(mainStage);
 		});
 		
 	        
