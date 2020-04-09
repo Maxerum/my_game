@@ -1,6 +1,5 @@
 package application;
 
-import java.util.LinkedList;
 import java.util.Random;
 
 /*import application.MenuItem.MenuBox;
@@ -32,6 +31,7 @@ public class Menu {
 	private Pane mainPane;
 	private Scene menuScene;
 	private Stage mainStage;
+	
 
 	public Menu() {
 		mainPane = new Pane();
@@ -45,69 +45,78 @@ public class Menu {
 	Stage getMainStage() {
 		return mainStage;
 	}
-	
-	
+
 	private void setMenuBackground() {
 		Image image = new Image(getClass().getResourceAsStream("black_mamb.png"));
-        ImageView img = new ImageView(image);
-        img.setFitHeight(600);
-        img.setFitWidth(900); 
-        mainPane.getChildren().add(img);
+		ImageView img = new ImageView(image);
+		img.setFitHeight(600);
+		img.setFitWidth(900);
+		mainPane.getChildren().add(img);
 	}
 
 	private void createMenu() {
 		Label label = new Label("SNAKE");
-        label.setFont(new Font("Helvetica", 100));
-        label.setTranslateX(310);
-        label.setTextFill(Color.web("#0076a3"));
-        mainPane.getChildren().add(label);
-		
-		
-        MenuItem newGame = new MenuItem("NEW GAME");
-        MenuItem options = new MenuItem("SETTINGS");
-        MenuItem exitGame = new MenuItem("EXIT");
+		label.setFont(new Font("Helvetica", 100));
+		label.setTranslateX(310);
+		label.setTextFill(Color.web("#0076a3"));
+		mainPane.getChildren().add(label);
+
+		MenuItem newGame = new MenuItem("NEW GAME");
+		MenuItem options = new MenuItem("SETTINGS");
+		MenuItem exitGame = new MenuItem("EXIT");
 		MenuItem other = new MenuItem("OTHER");
 		MenuItem records = new MenuItem("RECORDS");
 		MenuItem information = new MenuItem("INFORMATION");
 		MenuItem optionsBack = new MenuItem("BACK");
-		SubMenu optionsMenu = new SubMenu(other, records, information, optionsBack);
-		SubMenu mainMenu = new SubMenu(newGame, options, exitGame);
 
+		MenuItem hardMode = new MenuItem("HARD");
+		MenuItem easyMode = new MenuItem("EASY");
+		MenuItem mediumMode = new MenuItem("MEDIUM");
+		MenuItem modesBack = new MenuItem("BACK");
+		MenuItem recordFirst = new MenuItem("Top 1");
+		MenuItem recordSecond = new MenuItem("Top 2");
+		MenuItem recordThird = new MenuItem("Top 3");
+		MenuItem recordsBack = new MenuItem("Back");
+
+		SubMenu optionsMenu = new SubMenu(other, information, optionsBack);
+		SubMenu modeList = new SubMenu(easyMode, mediumMode, hardMode, modesBack);
+		SubMenu mainMenu = new SubMenu(newGame, options, records, exitGame);
+		SubMenu recordList = new SubMenu(recordFirst, recordSecond, recordThird, recordsBack);
 		MenuBox menuBox = new MenuBox(mainMenu);
-		
-		newGame.setOnMouseClicked(click-> {
+
+		newGame.setOnMouseClicked(event -> menuBox.setSubMenu(modeList));
+
+		easyMode.setOnMouseClicked(click -> {
 			GameScene gameScene = new GameScene();
+			gameScene.speed = 0.1;
 			gameScene.start(mainStage);
 		});
-		
-	        
-	        options.setOnMouseClicked(event->menuBox.setSubMenu(optionsMenu));
-	        exitGame.setOnMouseClicked(event-> System.exit(0));
-	        optionsBack.setOnMouseClicked(event->menuBox.setSubMenu(mainMenu));
+
+		mediumMode.setOnMouseClicked(click -> {
+			GameScene gameScene = new GameScene();
+			gameScene.speed = 0.05;
+			gameScene.start(mainStage);
+		});
+
+		hardMode.setOnMouseClicked(click -> {
+			// speed = 0.01;
+			GameScene gameScene = new GameScene();
+			gameScene.speed = 0.01;
+			gameScene.start(mainStage);
+		});
+		/*
+		 * newGame.setOnMouseClicked(click -> { GameScene gameScene = new GameScene();
+		 * gameScene.start(mainStage); });
+		 */
+
+		options.setOnMouseClicked(event -> menuBox.setSubMenu(optionsMenu));
+		records.setOnMouseClicked(event -> menuBox.setSubMenu(recordList));
+		recordsBack.setOnMouseClicked(event -> menuBox.setSubMenu(mainMenu));
+		modesBack.setOnMouseClicked(event -> menuBox.setSubMenu(mainMenu));
+		exitGame.setOnMouseClicked(event -> System.exit(0));
+		optionsBack.setOnMouseClicked(event -> menuBox.setSubMenu(mainMenu));
 		menuBox.setVisible(true);
 		mainPane.getChildren().addAll(menuBox);
-		//mainPane.getChildren().add(menuBox);
+		// mainPane.getChildren().add(menuBox);
 	}
-	
-	/*
-	 * private void createNewGameButton() { MenuItem newGame = new
-	 * MenuItem("NEW GAME");
-	 * newGame.setOnMouseClicked(event->mainStage.setScene(sceneGame));
-	 * 
-	 * }
-	 */
-	
-	/*
-	 * private MenuItem createExitButton() { MenuItem exitGame = new
-	 * MenuItem("EXIT"); exitGame.setOnMouseClicked(event-> System.exit(0)); return
-	 * exitGame; }
-	 * 
-	 * private MenuItem createOptionsButton() { MenuItem options = new
-	 * MenuItem("SETTINGS");
-	 * options.setOnMouseClicked(event->menuBox.setSubMenu(optionsMenu)); return
-	 * options; }
-	 */
-
 }
-
-

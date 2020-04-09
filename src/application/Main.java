@@ -23,7 +23,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 
-
 public class Main extends Application {
 
 	@Override
@@ -41,4 +40,5 @@ public class Main extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+
 }
