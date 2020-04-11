@@ -1,5 +1,9 @@
 package application;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Random;
 
 /*import application.MenuItem.MenuBox;
@@ -12,6 +16,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -23,6 +30,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -31,19 +40,57 @@ public class Menu {
 	private Pane mainPane;
 	private Scene menuScene;
 	private Stage mainStage;
-	
+
+	String firstRecord;
+	String secondRecord;
+	String thirdRecord;
 
 	public Menu() {
 		mainPane = new Pane();
 		menuScene = new Scene(mainPane, 900, 600, Color.TRANSPARENT);
 		mainStage = new Stage();
 		mainStage.setScene(menuScene);
+		mainStage.setResizable(false);
 		setMenuBackground();
 		createMenu();
 	}
 
 	Stage getMainStage() {
 		return mainStage;
+	}
+
+	public void getNameOfRecord(ObservableList<Person> persons) {
+		try {
+
+			InputStreamReader isr = new InputStreamReader(new FileInputStream("./snake-game-best-score.txt"), "UTF-8");
+			BufferedReader br = new BufferedReader(isr);
+			for (int i = 0; i < 2; i++) {
+				Person f = new Person("", "");
+				String names = new String();
+				int c;
+				while ((c = br.read()) != '\n') {
+					names += (char) c;
+				}
+
+				String record = new String();
+
+				while ((c = br.read()) != '\n') {
+
+					if (c == -1)
+						break;
+
+					if (Character.isDigit(c)) {
+						record += (char) c;
+					}
+				}
+				f.setName(names);
+				f.setAge(record);
+				persons.add(f);
+			}
+
+		} catch (IOException e) {
+
+		}
 	}
 
 	private void setMenuBackground() {
@@ -72,16 +119,19 @@ public class Menu {
 		MenuItem hardMode = new MenuItem("HARD");
 		MenuItem easyMode = new MenuItem("EASY");
 		MenuItem mediumMode = new MenuItem("MEDIUM");
+		MenuItem resumeLastGame = new MenuItem("Load last game");
 		MenuItem modesBack = new MenuItem("BACK");
-		MenuItem recordFirst = new MenuItem("Top 1");
-		MenuItem recordSecond = new MenuItem("Top 2");
-		MenuItem recordThird = new MenuItem("Top 3");
+
+		// MenuItem recordFirst = new MenuItem(getNameOfRecord()/* "Top 1" */);
 		MenuItem recordsBack = new MenuItem("Back");
 
 		SubMenu optionsMenu = new SubMenu(other, information, optionsBack);
-		SubMenu modeList = new SubMenu(easyMode, mediumMode, hardMode, modesBack);
+		SubMenu modeList = new SubMenu(easyMode, mediumMode, hardMode, resumeLastGame, modesBack);
 		SubMenu mainMenu = new SubMenu(newGame, options, records, exitGame);
-		SubMenu recordList = new SubMenu(recordFirst, recordSecond, recordThird, recordsBack);
+		/*
+		 * SubMenu recordList = new SubMenu( recordFirst,recordsBack , recordSecond,
+		 * recordThird, );
+		 */
 		MenuBox menuBox = new MenuBox(mainMenu);
 
 		newGame.setOnMouseClicked(event -> menuBox.setSubMenu(modeList));
@@ -110,13 +160,36 @@ public class Menu {
 		 */
 
 		options.setOnMouseClicked(event -> menuBox.setSubMenu(optionsMenu));
-		records.setOnMouseClicked(event -> menuBox.setSubMenu(recordList));
+
+		records.setOnMouseClicked(event -> {
+			/* Person f = new Person(); */
+
+			ObservableList<Person> people = FXCollections.observableArrayList();
+			getNameOfRecord(people);
+			TableView<Person> table = new TableView<Person>(people);
+			TableColumn<Person, String> nameColumn = new TableColumn<Person, String>("Name");
+			TableColumn<Person, String> ageColumn = new TableColumn<Person, String>("Record");
+			nameColumn.setCellValueFactory(new PropertyValueFactory<Person, String>("name"));
+			// nameColumn.setCellValueFactory(getName());
+			table.setTranslateX(350);
+			table.setTranslateY(150);
+			table.setPrefWidth(250);
+			table.setPrefHeight(200);
+			ageColumn.setCellValueFactory(new PropertyValueFactory<Person, String>("age"));
+			table.getColumns().add(nameColumn);
+			table.getColumns().add(ageColumn);
+			mainPane.getChildren().add(table);
+
+		});
+
+		/* records.setOnMouseClicked(event -> menuBox.setSubMenu(recordList)); */
 		recordsBack.setOnMouseClicked(event -> menuBox.setSubMenu(mainMenu));
 		modesBack.setOnMouseClicked(event -> menuBox.setSubMenu(mainMenu));
 		exitGame.setOnMouseClicked(event -> System.exit(0));
 		optionsBack.setOnMouseClicked(event -> menuBox.setSubMenu(mainMenu));
 		menuBox.setVisible(true);
 		mainPane.getChildren().addAll(menuBox);
+
 		// mainPane.getChildren().add(menuBox);
 	}
 }

@@ -9,23 +9,39 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 //import application.GameScene.Corner;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class Algorithms {
 	final int[] boarderX = new int[484];
 	final int[] boarderY = new int[484];
-
+	Stage recordStage = new Stage();
+	Pane pane = new Pane();
+	Scene scene = new Scene(pane, 300, 150);
+	
 	// Snake variables
 	int lengthOfSnake = 3;
 
@@ -35,7 +51,7 @@ public class Algorithms {
 			440, 460 };
 
 	int moves = 0;
-
+	String nameRecord;
 	int totalScore = 0;
 	int fruitEaten = 0;
 	// int bestScore = 1;
@@ -74,15 +90,18 @@ public class Algorithms {
 
 	int bestScore = readBestScorefromTheFile();
 
-	private void writeBestScoreInTheFile() {
+	private void writeBestScoreInTheFile(String nameRecord) {
 		if (totalScore >= bestScore) {
 			try {
 				FileOutputStream fos = new FileOutputStream("./snake-game-best-score.txt");
 				OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+				osw.write(nameRecord);
+				osw.write("\r\n");
 				osw.write(bestScore + "");
 				osw.flush();
 				osw.close();
 			} catch (IOException e) {
+
 			}
 		}
 	}
@@ -93,7 +112,11 @@ public class Algorithms {
 			BufferedReader br = new BufferedReader(isr);
 
 			String str = "";
+
 			int c;
+			while ((c = br.read()) != '\n') {
+
+			}
 			while ((c = br.read()) != -1) {
 				if (Character.isDigit(c)) {
 					str += (char) c;
@@ -266,10 +289,10 @@ public class Algorithms {
 		gc.fillRect(671, 281, 138, 28);
 		gc.setFill(Color.rgb(11, 54, 82));
 
-		gc.fillText("   Speed", 696, 350);
-		gc.fillRect(670, 360, 140, 30);
-		gc.setFill(Color.rgb(11, 54, 82));
-		gc.setFill(Color.rgb(0, 250, 154));
+		/*
+		 * gc.fillText("   Speed", 696, 350); gc.fillRect(670, 360, 140, 30);
+		 * gc.setFill(Color.rgb(11, 54, 82)); gc.setFill(Color.rgb(0, 250, 154));
+		 */
 		// gc.fillText(speed + "", 670 + (142 - new Text(totalScore +
 		// "").getLayoutBounds().getWidth()) / 2, 222);
 
@@ -312,11 +335,57 @@ public class Algorithms {
 				gc.setFont(Font.font("Arial", FontWeight.BOLD, 50));
 				gc.fillText("YOU LOSE", 150, 240);
 
+				if (totalScore >= bestScore) {
+					
+					recordStage.setTitle("RECORD WINDOW");
+					recordStage.setResizable(false);
+					recordStage.show();
+					/* pane.setAlignment(Pos.CENTER); */
+					pane.setStyle("-fx-background-color: rgb(0, 250, 154);");
+					recordStage.setScene(scene);
+					Label label = new Label("NEW RECORD");
+					label.setFont(new Font("Helvetica", 15));
+					label.setTranslateX(100);
+					label.setTextFill(Color.web("#0076a3"));
+					pane.getChildren().add(label);
+					/*
+					 * Text scenetitle = new Text("Record"); scenetitle.setTranslateY(15);
+					 * scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+					 * pane.getChildren().add(scenetitle);
+					 */
+
+					/* panadd(scenetitle); */
+
+					TextField userTextField = new TextField();
+					  Pattern p = Pattern.compile("(\\d+\\.?\\d*)?");
+					  userTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+						  if(newValue.length()>=11) userTextField.setText(oldValue);
+					        //if (!p.matcher(newValue).matches()) userTextField.setText(oldValue);
+					    });
+					pane.getChildren().add(userTextField);
+					userTextField.setTranslateX(75);
+					userTextField.setTranslateY(50);
+					
+					Button btn = new Button("OK");
+					btn.setTranslateX(130);
+					btn.setTranslateY(100);
+					btn.setStyle("-fx-background-color:rgb(11, 54, 82);-fx-text-fill:rgb(0, 250, 154)");
+					pane.getChildren().add(btn);
+					btn.setOnAction(new EventHandler<ActionEvent>() {
+						@Override
+						public void handle(ActionEvent event) {
+							nameRecord = userTextField.getText();
+							recordStage.close();
+							writeBestScoreInTheFile(nameRecord);
+						}
+ 
+					});
+				}
+
 				// Press Space To Restart
 				gc.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 				gc.fillText("Press Space To Restart", 175, 280);
 
-				writeBestScoreInTheFile();
 			}
 		}
 

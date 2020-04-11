@@ -1,5 +1,6 @@
 package application;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -31,6 +32,7 @@ public class GameScene extends Application {
 	private Stage gameStage;
 	private Stage menuStage;
 	public double speed ;
+	public FileWriter writer; 
 
 
 	Timeline timeline = new Timeline();
@@ -59,10 +61,12 @@ public class GameScene extends Application {
 		layout2.setStyle("-fx-background-color: rgb(0, 250, 154);");
 		layout2.getChildren().add(canvas);
 
+		//writer = new FileWriter("text.txt");
 
 		timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(speed), (ActionEvent event) -> {
 			// back.createBackground(gc);/* drawShapes(gc);
 			algo.play(gc, sceneGame, timeline);
+			
 
 		}));
 
