@@ -66,8 +66,6 @@ public class GameScene extends Application {
 		timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(speed), (ActionEvent event) -> {
 			// back.createBackground(gc);/* drawShapes(gc);
 			algo.play(gc, sceneGame, timeline);
-			
-
 		}));
 
 		timeline.setCycleCount(Timeline.INDEFINITE);

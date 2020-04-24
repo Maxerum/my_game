@@ -17,6 +17,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -64,8 +65,8 @@ public class Menu {
 
 			InputStreamReader isr = new InputStreamReader(new FileInputStream("./snake-game-best-score.txt"), "UTF-8");
 			BufferedReader br = new BufferedReader(isr);
-			for (int i = 0; i < 2; i++) {
-				Person f = new Person("", "");
+			for (int i = 0; i < 5; i++) {
+				Person f = new Person("", 0);
 				String names = new String();
 				int c;
 				while ((c = br.read()) != '\n') {
@@ -76,15 +77,18 @@ public class Menu {
 
 				while ((c = br.read()) != '\n') {
 
-					if (c == -1)
+					if (c == -1) {
+						i = 5;
 						break;
+					}
 
 					if (Character.isDigit(c)) {
 						record += (char) c;
 					}
 				}
+				
 				f.setName(names);
-				f.setAge(record);
+				f.setAge(Integer.parseInt(record));
 				persons.add(f);
 			}
 
@@ -168,18 +172,25 @@ public class Menu {
 			getNameOfRecord(people);
 			TableView<Person> table = new TableView<Person>(people);
 			TableColumn<Person, String> nameColumn = new TableColumn<Person, String>("Name");
-			TableColumn<Person, String> ageColumn = new TableColumn<Person, String>("Record");
+			TableColumn<Person, Integer> ageColumn = new TableColumn<Person, Integer>("Record");
 			nameColumn.setCellValueFactory(new PropertyValueFactory<Person, String>("name"));
 			// nameColumn.setCellValueFactory(getName());
 			table.setTranslateX(350);
 			table.setTranslateY(150);
 			table.setPrefWidth(250);
-			table.setPrefHeight(200);
-			ageColumn.setCellValueFactory(new PropertyValueFactory<Person, String>("age"));
+			table.setPrefHeight(205);
+			ageColumn.setCellValueFactory(new PropertyValueFactory<Person, Integer>("age"));
+			/*
+			 * TableColumn sortcolumn = null; SortType st = null; if
+			 * (table.getSortOrder().size()>0) { sortcolumn = (TableColumn)
+			 * table.getSortOrder().get(0); st = sortcolumn.getSortType(); }
+			 */
+			
 			table.getColumns().add(nameColumn);
 			table.getColumns().add(ageColumn);
+			
 			mainPane.getChildren().add(table);
-
+			table.getSortOrder().add(ageColumn);
 		});
 
 		/* records.setOnMouseClicked(event -> menuBox.setSubMenu(recordList)); */

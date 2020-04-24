@@ -14,15 +14,15 @@ public class Person {
 
 
 	private SimpleStringProperty name;
-	private SimpleStringProperty record;
+	private SimpleIntegerProperty record;
 
 	Person(){
 		
 	}
 	
-	Person(String name, String age) {
+	Person(String name, int age) {
 		this.name = new SimpleStringProperty(name);
-		this.record = new SimpleStringProperty(age);
+		this.record = new SimpleIntegerProperty(age);
 	}
 
 	public String getName() {
@@ -33,11 +33,11 @@ public class Person {
 		name.set(value);
 	}
 
-	public String getAge() {
+	public int getAge() {
 		return record.get();
 	}
 
-	public void setAge(String value) {
+	public void setAge(int value) {
 		record.set(value);
 	}
 

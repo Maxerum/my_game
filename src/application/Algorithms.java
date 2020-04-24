@@ -3,6 +3,7 @@ package application;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -93,13 +94,18 @@ public class Algorithms {
 	private void writeBestScoreInTheFile(String nameRecord) {
 		if (totalScore >= bestScore) {
 			try {
-				FileOutputStream fos = new FileOutputStream("./snake-game-best-score.txt");
-				OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
-				osw.write(nameRecord);
-				osw.write("\r\n");
-				osw.write(bestScore + "");
-				osw.flush();
-				osw.close();
+				FileWriter writer  = new FileWriter("./snake-game-best-score.txt", true);
+			
+				/*
+				 * FileOutputStream fos = new FileOutputStream("./snake-game-best-score.txt");
+				 * OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+				 */
+				writer.write("\r\n");
+				writer.write(nameRecord);
+				writer.write("\r\n");
+				writer.write(bestScore + "");
+				writer.flush();
+				writer.close();
 			} catch (IOException e) {
 
 			}
@@ -118,6 +124,9 @@ public class Algorithms {
 
 			}
 			while ((c = br.read()) != -1) {
+				if(c == '\n') {
+					break;
+				}
 				if (Character.isDigit(c)) {
 					str += (char) c;
 				}
