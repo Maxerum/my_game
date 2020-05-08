@@ -61,13 +61,12 @@ public class Background {
 		gc.setFill(Color.rgb(0, 250, 154));
 		//gc.fillText(totalScore + "", 670 + (142 - new Text(totalScore + "").getLayoutBounds().getWidth()) / 2, 222);
 
-		gc.setFill(Color.rgb(11, 54, 82));
-		gc.fillText("    Fruits ", 696, 270);
-		gc.fillRect(670, 280, 140, 30);
-		gc.setFill(Color.rgb(11, 54, 82));
-		gc.fillRect(671, 281, 138, 28);
-		// gc.setFill(Color.rgb(11, 54, 82));
-		gc.setFill(Color.rgb(0, 250, 154));
+		/*
+		 * gc.setFill(Color.rgb(11, 54, 82)); gc.fillText("    Fruits ", 696, 270);
+		 * gc.fillRect(670, 280, 140, 30); gc.setFill(Color.rgb(11, 54, 82));
+		 * gc.fillRect(671, 281, 138, 28); // gc.setFill(Color.rgb(11, 54, 82));
+		 * gc.setFill(Color.rgb(0, 250, 154));
+		 */
 		//gc.fillText(fruitEaten + "", 670 + (142 - new Text(fruitEaten + "").getLayoutBounds().getWidth()) / 2, 222);
 
 		gc.setFill(Color.rgb(11, 54, 82));

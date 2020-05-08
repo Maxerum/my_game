@@ -41,10 +41,33 @@ public class Menu {
 	private Pane mainPane;
 	private Scene menuScene;
 	private Stage mainStage;
+	private MyThread server;
 
-	String firstRecord;
-	String secondRecord;
-	String thirdRecord;
+	public String saveInformation;
+
+	static boolean flag = false;
+	
+	int checker;
+	
+	public static void menuChecker() {
+		flag = true;
+	}
+
+	public void initThreadJob() {
+		this.server.generateInfo();
+
+		while (!Semaphore.isReady) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.out.println("waiting");
+		}
+
+		this.saveInformation = server.getString();
+		// System.out.println(information);
+	}
 
 	public Menu() {
 		mainPane = new Pane();
@@ -86,7 +109,7 @@ public class Menu {
 						record += (char) c;
 					}
 				}
-				
+
 				f.setName(names);
 				f.setAge(Integer.parseInt(record));
 				persons.add(f);
@@ -106,6 +129,7 @@ public class Menu {
 	}
 
 	private void createMenu() {
+		checker = 0;
 		Label label = new Label("SNAKE");
 		label.setFont(new Font("Helvetica", 100));
 		label.setTranslateX(310);
@@ -113,6 +137,7 @@ public class Menu {
 		mainPane.getChildren().add(label);
 
 		MenuItem newGame = new MenuItem("NEW GAME");
+		MenuItem continueGame = new MenuItem("CONTINUE");
 		MenuItem options = new MenuItem("SETTINGS");
 		MenuItem exitGame = new MenuItem("EXIT");
 		MenuItem other = new MenuItem("OTHER");
@@ -123,20 +148,48 @@ public class Menu {
 		MenuItem hardMode = new MenuItem("HARD");
 		MenuItem easyMode = new MenuItem("EASY");
 		MenuItem mediumMode = new MenuItem("MEDIUM");
-		MenuItem resumeLastGame = new MenuItem("Load last game");
+		// MenuItem resumeLastGame = new MenuItem("Load last game");
 		MenuItem modesBack = new MenuItem("BACK");
 
 		// MenuItem recordFirst = new MenuItem(getNameOfRecord()/* "Top 1" */);
 		MenuItem recordsBack = new MenuItem("Back");
 
 		SubMenu optionsMenu = new SubMenu(other, information, optionsBack);
-		SubMenu modeList = new SubMenu(easyMode, mediumMode, hardMode, resumeLastGame, modesBack);
-		SubMenu mainMenu = new SubMenu(newGame, options, records, exitGame);
+		SubMenu modeList = new SubMenu(easyMode, mediumMode, hardMode, /* resumeLastGame */ modesBack);
+		SubMenu mainMenu = new SubMenu(continueGame, newGame, options, records, exitGame);
+		;
+		/*
+		 * if (!flag) { mainMenu = } else { mainMenu = new SubMenu(newGame, options,
+		 * records, exitGame); }
+		 */
+
 		/*
 		 * SubMenu recordList = new SubMenu( recordFirst,recordsBack , recordSecond,
 		 * recordThird, );
 		 */
 		MenuBox menuBox = new MenuBox(mainMenu);
+		//Algorithms.parseSaveInformation(saveInformation);
+		continueGame.setOnMouseClicked(click -> {
+			
+			this.server = new MyThread();
+			this.initThreadJob();
+			// System.out.println("Yoy");
+			System.out.println(saveInformation);
+			//
+			this.server.getThread().interrupt();
+			if (checker == 0) {
+				Algorithms.parseSaveInformation(saveInformation);
+			
+			  checker++; } else { checker++; }
+			 
+			Algorithms.flag = 1;
+			GameScene gameScene = new GameScene();
+			gameScene.speed = 0.1;
+
+			gameScene.start(mainStage);
+//			readConservationInformation();
+
+		});
 
 		newGame.setOnMouseClicked(event -> menuBox.setSubMenu(modeList));
 
@@ -185,10 +238,10 @@ public class Menu {
 			 * (table.getSortOrder().size()>0) { sortcolumn = (TableColumn)
 			 * table.getSortOrder().get(0); st = sortcolumn.getSortType(); }
 			 */
-			
+
 			table.getColumns().add(nameColumn);
 			table.getColumns().add(ageColumn);
-			
+
 			mainPane.getChildren().add(table);
 			table.getSortOrder().add(ageColumn);
 		});

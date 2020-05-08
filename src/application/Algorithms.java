@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -37,14 +38,16 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Algorithms {
-	final int[] boarderX = new int[484];
-	final int[] boarderY = new int[484];
+	final static int[] boarderX = new int[484];
+	final static int[] boarderY = new int[484];
 	Stage recordStage = new Stage();
 	Pane pane = new Pane();
 	Scene scene = new Scene(pane, 300, 150);
-	
+
+	Saving saver = new Saving();
+
 	// Snake variables
-	int lengthOfSnake = 3;
+	static int lengthOfSnake = 3;
 
 	int[] fruitXPos = { 20, 40, 60, 80, 100, 120, 140, 160, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 420,
 			440, 460 };
@@ -53,7 +56,8 @@ public class Algorithms {
 
 	int moves = 0;
 	String nameRecord;
-	int totalScore = 0;
+	static int totalScore = 0;
+	static int flag = 0;
 	int fruitEaten = 0;
 	// int bestScore = 1;
 	int speed = 1;
@@ -75,27 +79,81 @@ public class Algorithms {
 	Image fruitImage = new Image(getClass().getResourceAsStream("my_fruit.png"));
 
 	boolean gameOver = false;
-	Random random = new Random();
+	static Random random = new Random();
 
-	int posX = random.nextInt(22);
-	int posY = random.nextInt(22);
+	static int posX = random.nextInt(22);
+	static int posY = random.nextInt(22);
 
-	boolean left = false;
-	boolean right = false;
-	boolean up = false;
-	boolean down = false;
+	static boolean left = false;
+	static boolean right = false;
+	static boolean up = false;
+	static boolean down = false;
 
 	public Algorithms() {
 
 	}
 
-	int bestScore = readBestScorefromTheFile();
+	static int bestScore = readBestScorefromTheFile();
+
+	public void save() {
+		try {
+			FileWriter writer = new FileWriter("notes3.txt", false);
+
+			writer.write(totalScore + " ");
+			writer.write(bestScore + " ");
+			// writer.write(lengthOfSnake + " ");
+
+			writer.write(posX + " ");
+			writer.write(posY + " ");
+
+			for (int i = 0; i < lengthOfSnake; i++) {
+				writer.write(boarderX[i] + " ");
+				writer.write(boarderY[i] + " ");
+			}
+			int direction = 0;
+			if (up == true)
+				direction = 1;
+			if (right == true)
+				direction = 2;
+			if (down == true)
+				direction = 3;
+			if (left == true)
+				direction = 4;
+			writer.write(direction + " ");
+			writer.flush();
+			writer.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static String getSaveInfo() {
+		try {
+			InputStreamReader isr = new InputStreamReader(new FileInputStream("notes3.txt"), "UTF-8");
+			BufferedReader br = new BufferedReader(isr);
+
+			int output = 0;
+			String str = new String();
+			int c;
+			while ((c = br.read()) != -1) {
+				str += (char) c;
+			}
+
+			br.close();
+			// System.out.println(str);
+			return str;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	private void writeBestScoreInTheFile(String nameRecord) {
 		if (totalScore >= bestScore) {
 			try {
-				FileWriter writer  = new FileWriter("./snake-game-best-score.txt", true);
-			
+				FileWriter writer = new FileWriter("./snake-game-best-score.txt", true);
+
 				/*
 				 * FileOutputStream fos = new FileOutputStream("./snake-game-best-score.txt");
 				 * OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
@@ -112,35 +170,112 @@ public class Algorithms {
 		}
 	}
 
-	private int readBestScorefromTheFile() {
+	private static int readBestScorefromTheFile() {
 		try {
 			InputStreamReader isr = new InputStreamReader(new FileInputStream("./snake-game-best-score.txt"), "UTF-8");
 			BufferedReader br = new BufferedReader(isr);
 
-			String str = "";
+			int output = 0;
 
 			int c;
-			while ((c = br.read()) != '\n') {
+			for (int i = 0; i < 5; i++) {
+				String str = "";
+				while ((c = br.read()) != '\n') {
 
-			}
-			while ((c = br.read()) != -1) {
-				if(c == '\n') {
-					break;
 				}
-				if (Character.isDigit(c)) {
-					str += (char) c;
+				while ((c = br.read()) != '\n') {
+					if (c == -1) {
+						i = 5;
+						break;
+					}
+					if (Character.isDigit(c)) {
+						str += (char) c;
+					}
 				}
+				if (str.equals("")) {
+					str = "0";
+				}
+				output = Integer.parseInt(str);
 			}
-			if (str.equals("")) {
-				str = "0";
-			}
-
 			br.close();
-			return Integer.parseInt(str);
+			return output;
 		} catch (IOException e) {
 		}
 		return 0;
 	}
+
+	public static void parseSaveInformation(String str) {
+		/* char[] strArray = new char[4]; */
+		/*
+		 * char[] strArray = str.toCharArray(); for (int i = 0; strArray[i] != ' '; i++)
+		 * { }
+		 */
+		/*
+		 * int i, j, k; for (i = 0; str.charAt(i) != ' '; i++) { } totalScore =
+		 * Integer.parseInt(str.substring(0, i)); System.out.println(totalScore);
+		 */
+		String[] subStr;
+		String delim = " ";
+		subStr = str.split(delim);
+
+		/*
+		 * for (int i = 0; i < subStr.length; i++) { System.out.println(subStr[i]); }
+		 */
+		totalScore = Integer.parseInt(subStr[0]);
+		bestScore = Integer.parseInt(subStr[1]);
+		lengthOfSnake = 3 + totalScore;
+
+		posX = Integer.parseInt(subStr[2]);
+		posY = Integer.parseInt(subStr[3]);
+		/* for (int j = 4; j < lengthOfSnake; j++) { */
+		int j = 4;
+		for (int k = 0; k < lengthOfSnake; k++) {
+			boarderX[k] = Integer.parseInt(subStr[j]);
+			j++;
+			boarderY[k] = Integer.parseInt(subStr[j]);
+			j++;
+		}
+		int direction = Integer.parseInt(subStr[j]);
+		System.out.println(direction);
+		switch (direction) {
+		case 1:
+			up = true;
+		case 2:
+			right = true;
+		case 3:
+			down = true;
+		case 4:
+			left = true;
+		}
+		/* } */
+		// System.out.println(i);
+		// System.out.println(str);
+		/*
+		 * for (j = i; str.charAt(j) != ' '; j++) { } bestScore =
+		 * Integer.parseInt(str.substring(i, j)); System.out.println(bestScore);
+		 */
+
+		/*
+		 * int j = i; for (j = i; str.charAt(j) != ' '; j++) { } bestScore =
+		 * Integer.parseInt(str.substring(i, j)); System.out.println(totalScore);
+		 * 
+		 * 
+		 * int k = j; for (k = j; str.charAt(k) != ' '; k++) { } posX =
+		 * Integer.parseInt(str.substring(j, k));
+		 * 
+		 * // i = k; for (i = k; str.charAt(i) != ' '; i++) { } posY =
+		 * Integer.parseInt(str.substring(k, i)); int p; for (int f = 0; f <
+		 * lengthOfSnake; f++) {
+		 * 
+		 * for (p = i; str.charAt(p) != ' '; p++) { } boarderX[f] =
+		 * Integer.parseInt(str.substring(i, p)); for (i = p; str.charAt(i) != ' '; i++)
+		 * { } boarderY[f] = Integer.parseInt(str.substring(p, i)); }
+		 */
+
+		// totalScore = Integer.parseInt(strArray);
+	}
+
+	// public void func(int )
 
 	public void reload(Scene sceneGame, Timeline timeline) {
 		sceneGame.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
@@ -220,7 +355,7 @@ public class Algorithms {
 				case DOWN:
 
 					moves++;
-					down = true;
+					// down = true;
 					if (!up) {
 						down = true;
 					} else {
@@ -235,16 +370,27 @@ public class Algorithms {
 		});
 	}
 
-	public void play(GraphicsContext gc, Scene sceneGame, Timeline timeline) {
-		if (moves == 0) {
-			boarderX[2] = 40;
-			boarderX[1] = 60;
-			boarderX[0] = 80;
+	public void play(GraphicsContext gc,
+			/* Stage menuStageScene sceneGame,Stage gameStage ,StackPane layout2, */Timeline timeline) {
+		if (flag == 0) {
+			if (moves == 0) {
+				boarderX[2] = 40;
+				boarderX[1] = 60;
+				boarderX[0] = 80;
 
-			boarderY[2] = 100;
-			boarderY[1] = 100;
-			boarderY[0] = 100;
-			timeline.play();
+				boarderY[2] = 100;
+				boarderY[1] = 100;
+				boarderY[0] = 100;
+				timeline.play();
+			}
+		} else {
+
+			/*
+			 * boarderX[2] = 40; boarderX[1] = 60; boarderX[0] = 80;
+			 * 
+			 * boarderY[2] = 100; boarderY[1] = 100; boarderY[0] = 100;
+			 */
+			// timeline.play();
 		}
 
 		if (totalScore > bestScore) {
@@ -290,34 +436,30 @@ public class Algorithms {
 		gc.fillRect(671, 201, 138, 28);
 		gc.setFill(Color.rgb(0, 250, 154));
 		gc.fillText(totalScore + "", 670 + (142 - new Text(totalScore + "").getLayoutBounds().getWidth()) / 2, 222);
-
+		// Press space to pause game
 		gc.setFill(Color.rgb(11, 54, 82));
-		gc.fillText("    Fruits ", 696, 270);
-		gc.fillRect(670, 280, 140, 30);
-		gc.setFill(Color.rgb(11, 54, 82));
-		gc.fillRect(671, 281, 138, 28);
-		gc.setFill(Color.rgb(11, 54, 82));
-
+		gc.setFont(Font.font("Arial", FontWeight.NORMAL, 18));
+		gc.fillText(" Press space ", 685, 300);
+		gc.fillText("  to pause this game ", 650, 320);
 		/*
-		 * gc.fillText("   Speed", 696, 350); gc.fillRect(670, 360, 140, 30);
-		 * gc.setFill(Color.rgb(11, 54, 82)); gc.setFill(Color.rgb(0, 250, 154));
+		 * Button button = new Button();
+		 * 
+		 * button.setText("BACK"); button.
+		 * setStyle("-fx-background-color:rgb(11, 54, 82);-fx-text-fill:rgb(0, 250, 154)"
+		 * ); button.setTranslateX(290); button.setTranslateY(200);
+		 * button.setMaxWidth(140); button.setMaxHeight(50);
 		 */
-		// gc.fillText(speed + "", 670 + (142 - new Text(totalScore +
-		// "").getLayoutBounds().getWidth()) / 2, 222);
 
-		Button button = new Button();
+//		button.setOnMouseClicked(click -> {
+//			//timeline.stop();
+//			gameStage.hide();
+//		
+//			menuStage.show();
+//			
+//			
+//		});
 
-		button.setText("BACK");
-		button.setStyle("-fx-background-color:rgb(11, 54, 82);-fx-text-fill:rgb(0, 250, 154)");
-		button.setTranslateX(290);
-		button.setTranslateY(200);
-		button.setMaxWidth(140);
-		button.setMaxHeight(50);
-
-		/*
-		 * button.setOnMouseClicked(click -> { this.gameStage.hide();
-		 * this.menuStage.show(); }); layout2.getChildren().add(button);
-		 */
+		// layout2.getChildren().add(button);
 
 		gc.drawImage(snakeBodyImage, boarderX[0], boarderY[0]);
 		snake.clear();
@@ -345,7 +487,7 @@ public class Algorithms {
 				gc.fillText("YOU LOSE", 150, 240);
 
 				if (totalScore >= bestScore) {
-					
+
 					recordStage.setTitle("RECORD WINDOW");
 					recordStage.setResizable(false);
 					recordStage.show();
@@ -357,24 +499,18 @@ public class Algorithms {
 					label.setTranslateX(100);
 					label.setTextFill(Color.web("#0076a3"));
 					pane.getChildren().add(label);
-					/*
-					 * Text scenetitle = new Text("Record"); scenetitle.setTranslateY(15);
-					 * scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-					 * pane.getChildren().add(scenetitle);
-					 */
-
-					/* panadd(scenetitle); */
 
 					TextField userTextField = new TextField();
-					  Pattern p = Pattern.compile("(\\d+\\.?\\d*)?");
-					  userTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-						  if(newValue.length()>=11) userTextField.setText(oldValue);
-					        //if (!p.matcher(newValue).matches()) userTextField.setText(oldValue);
-					    });
+					Pattern p = Pattern.compile("(\\d+\\.?\\d*)?");
+					userTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+						if (newValue.length() >= 11)
+							userTextField.setText(oldValue);
+						// if (!p.matcher(newValue).matches()) userTextField.setText(oldValue);
+					});
 					pane.getChildren().add(userTextField);
 					userTextField.setTranslateX(75);
 					userTextField.setTranslateY(50);
-					
+
 					Button btn = new Button("OK");
 					btn.setTranslateX(130);
 					btn.setTranslateY(100);
@@ -387,7 +523,7 @@ public class Algorithms {
 							recordStage.close();
 							writeBestScoreInTheFile(nameRecord);
 						}
- 
+
 					});
 				}
 
